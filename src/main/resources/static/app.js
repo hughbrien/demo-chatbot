@@ -67,26 +67,26 @@ async function loadAllConversations() {
         const response = await fetch(`${API_BASE_URL}/conversations`);
 
         if (!response.ok) {
-            throw new Error('Falha ao carregar conversas');
+            throw new Error('Failed to load conversations');
         }
 
         conversations = await response.json();
         renderConversationList();
 
-        // Se não houver conversas, cria uma automaticamente
+        // If no conversations exist, create one automatically
         if (conversations.length === 0) {
             await createNewChat();
         }
     } catch (error) {
-        console.error('Erro ao carregar conversas:', error);
-        conversationList.innerHTML = '<div class="empty-conversations">Erro ao carregar conversas</div>';
+        console.error('Error loading conversations:', error);
+        conversationList.innerHTML = '<div class="empty-conversations">Error loading conversations</div>';
     }
 }
 
 // Render conversation list in sidebar
 function renderConversationList() {
     if (conversations.length === 0) {
-        conversationList.innerHTML = '<div class="empty-conversations">Nenhuma conversa ainda</div>';
+        conversationList.innerHTML = '<div class="empty-conversations">No conversations yet</div>';
         return;
     }
 
@@ -106,12 +106,12 @@ function renderConversationList() {
         const titleSpan = document.createElement('span');
         titleSpan.className = 'conversation-title';
         titleSpan.textContent = conv.title;
-        titleSpan.title = conv.title; // Tooltip com título completo
+        titleSpan.title = conv.title; // Tooltip with full title
 
         const deleteBtn = document.createElement('button');
         deleteBtn.className = 'delete-btn';
         deleteBtn.innerHTML = '🗑️';
-        deleteBtn.title = 'Deletar conversa';
+        deleteBtn.title = 'Delete conversation';
         deleteBtn.addEventListener('click', (e) => {
             e.stopPropagation();
             deleteConversation(conv.conversationId);
@@ -146,15 +146,15 @@ function formatDate(timestamp) {
     const diffDays = Math.floor(diffMs / 86400000);
 
     if (diffMins < 1) {
-        return 'Agora';
+        return 'Now';
     } else if (diffMins < 60) {
-        return `${diffMins} min atrás`;
+        return `${diffMins} min ago`;
     } else if (diffHours < 24) {
-        return `${diffHours}h atrás`;
+        return `${diffHours}h ago`;
     } else if (diffDays < 7) {
-        return `${diffDays}d atrás`;
+        return `${diffDays}d ago`;
     } else {
-        return date.toLocaleDateString('pt-BR', { day: '2-digit', month: '2-digit' });
+        return date.toLocaleDateString('en-US', { day: '2-digit', month: '2-digit' });
     }
 }
 
@@ -169,26 +169,26 @@ async function createNewChat() {
         const response = await fetch(`${API_BASE_URL}/generate-chat-id`);
 
         if (!response.ok) {
-            throw new Error('Falha ao criar nova conversa');
+            throw new Error('Failed to create new conversation');
         }
 
         currentChatId = await response.text();
 
-        // Limpar mensagens
-        messagesDiv.innerHTML = '<div class="empty-chat"><p>👋 Olá! Como posso ajudar você hoje?</p></div>';
-        chatTitle.textContent = 'Nova Conversa';
+        // Clear messages
+        messagesDiv.innerHTML = '<div class="empty-chat"><p>👋 Hello! How can I help you today?</p></div>';
+        chatTitle.textContent = 'New Conversation';
 
-        // Habilitar input
+        // Enable input
         sendBtn.disabled = false;
         promptInput.disabled = false;
         promptInput.focus();
 
-        // Recarregar lista (a conversa aparecerá após primeira mensagem)
+        // Reload list (conversation will appear after first message)
         await loadAllConversations();
 
     } catch (error) {
-        console.error('Erro ao criar conversa:', error);
-        alert('Erro ao criar nova conversa. Tente novamente.');
+        console.error('Error creating conversation:', error);
+        alert('Error creating new conversation. Please try again.');
     } finally {
         setLoading(false);
         newChatBtn.disabled = false;
@@ -206,20 +206,20 @@ async function loadConversation(chatId) {
         const response = await fetch(`${API_BASE_URL}/${chatId}/messages`);
 
         if (!response.ok) {
-            throw new Error('Falha ao carregar mensagens');
+            throw new Error('Failed to load messages');
         }
 
         const messages = await response.json();
 
-        // Atualizar UI
+        // Update UI
         const conv = conversations.find(c => c.conversationId === chatId);
-        chatTitle.textContent = conv ? conv.title : 'Conversa';
+        chatTitle.textContent = conv ? conv.title : 'Conversation';
 
-        // Renderizar mensagens
+        // Render messages
         messagesDiv.innerHTML = '';
 
         if (messages.length === 0) {
-            messagesDiv.innerHTML = '<div class="empty-chat"><p>Nenhuma mensagem ainda. Comece a conversar!</p></div>';
+            messagesDiv.innerHTML = '<div class="empty-chat"><p>No messages yet. Start chatting!</p></div>';
         } else {
             messages.forEach(msg => {
                 addMessageToUI(msg.role, msg.text, false);
@@ -227,17 +227,17 @@ async function loadConversation(chatId) {
             scrollToBottom();
         }
 
-        // Atualizar sidebar
+        // Update sidebar
         renderConversationList();
 
-        // Habilitar input
+        // Enable input
         sendBtn.disabled = false;
         promptInput.disabled = false;
         promptInput.focus();
 
     } catch (error) {
-        console.error('Erro ao carregar conversa:', error);
-        alert('Erro ao carregar conversa.');
+        console.error('Error loading conversation:', error);
+        alert('Error loading conversation.');
     } finally {
         setLoading(false);
     }
@@ -245,7 +245,7 @@ async function loadConversation(chatId) {
 
 // Delete conversation
 async function deleteConversation(chatId) {
-    if (!confirm('Tem certeza que deseja deletar esta conversa?')) {
+    if (!confirm('Are you sure you want to delete this conversation?')) {
         return;
     }
 
@@ -255,24 +255,24 @@ async function deleteConversation(chatId) {
         });
 
         if (!response.ok) {
-            throw new Error('Falha ao deletar conversa');
+            throw new Error('Failed to delete conversation');
         }
 
-        // Se deletou a conversa atual, limpar tela
+        // If current conversation deleted, clear UI
         if (chatId === currentChatId) {
             currentChatId = null;
-            messagesDiv.innerHTML = '<div class="empty-chat"><p>Conversa deletada. Crie uma nova!</p></div>';
-            chatTitle.textContent = 'Selecione ou crie uma conversa';
+            messagesDiv.innerHTML = '<div class="empty-chat"><p>Conversation deleted. Create a new one!</p></div>';
+            chatTitle.textContent = 'Select or create a conversation';
             sendBtn.disabled = true;
             promptInput.disabled = true;
         }
 
-        // Recarregar lista
+        // Reload list
         await loadAllConversations();
 
     } catch (error) {
-        console.error('Erro ao deletar conversa:', error);
-        alert('Erro ao deletar conversa.');
+        console.error('Error deleting conversation:', error);
+        alert('Error deleting conversation.');
     }
 }
 
@@ -289,35 +289,35 @@ async function handleSendMessage(e) {
     try {
         setLoading(true);
 
-        // Limpar input
+        // Clear input
         promptInput.value = '';
         promptInput.style.height = 'auto';
 
-        // Remover mensagem vazia se existir
+        // Remove empty message if exists
         const emptyChat = messagesDiv.querySelector('.empty-chat');
         if (emptyChat) {
             emptyChat.remove();
         }
 
-        // Adicionar mensagem do usuário
+        // Add user message
         addMessageToUI('user', question, true);
 
-        // Criar elemento para resposta da IA
+        // Create AI response placeholder
         const aiMessageDiv = document.createElement('div');
         aiMessageDiv.className = 'message ai-message';
         aiMessageDiv.innerHTML = '<div class="loading-spinner"></div>';
         messagesDiv.appendChild(aiMessageDiv);
         scrollToBottom();
 
-        // Stream da resposta
+        // Stream AI response
         await streamAIResponse(question, aiMessageDiv);
 
-        // Recarregar conversas para atualizar título
+        // Reload conversations to update title
         await loadAllConversations();
 
     } catch (error) {
-        console.error('Erro ao enviar mensagem:', error);
-        alert('Erro ao enviar mensagem. Tente novamente.');
+        console.error('Error sending message:', error);
+        alert('Error sending message. Please try again.');
     } finally {
         setLoading(false);
     }
@@ -337,24 +337,24 @@ async function streamAIResponse(question, aiMessageDiv) {
                 const data = JSON.parse(event.data);
                 fullResponse += data.value;
 
-                // Renderizar Markdown e sanitizar
+                // Render Markdown and sanitize
                 const htmlContent = marked.parse(fullResponse);
                 const sanitizedContent = DOMPurify.sanitize(htmlContent);
 
                 aiMessageDiv.innerHTML = sanitizedContent;
                 scrollToBottom();
             } catch (error) {
-                console.error('Erro ao processar chunk:', error);
+                console.error('Error processing chunk:', error);
             }
         };
 
         eventSource.onerror = (error) => {
-            console.log('Stream finalizado ou erro:', error);
+            console.log('Stream ended or error:', error);
             eventSource.close();
 
-            // Se não recebeu nenhuma resposta, mostrar erro
+            // If no response received
             if (!fullResponse) {
-                aiMessageDiv.innerHTML = '<em>Erro ao receber resposta. Tente novamente.</em>';
+                aiMessageDiv.innerHTML = '<em>Error receiving response. Please try again.</em>';
                 reject(error);
             } else {
                 resolve();
@@ -371,7 +371,7 @@ function addMessageToUI(role, content, shouldScroll = true) {
     if (role === 'user' || role === 'USER') {
         messageDiv.textContent = content;
     } else {
-        // Para mensagens da IA, renderizar Markdown
+        // For AI messages, render Markdown
         const htmlContent = marked.parse(content);
         const sanitizedContent = DOMPurify.sanitize(htmlContent);
         messageDiv.innerHTML = sanitizedContent;
@@ -398,6 +398,6 @@ function setLoading(loading) {
     if (loading) {
         sendBtnText.innerHTML = '<span class="loading-spinner"></span>';
     } else {
-        sendBtnText.textContent = 'Enviar';
+        sendBtnText.textContent = 'Send';
     }
 }

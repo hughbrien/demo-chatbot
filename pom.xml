@@ -10,7 +10,7 @@
 	</parent>
 	<groupId>villanidev.ai</groupId>
 	<artifactId>demo-chatbot</artifactId>
-	<version>0.0.1-SNAPSHOT</version>
+	<version>0.0.2-SNAPSHOT</version>
 	<name>demo-chatbot</name>
 	<description>Demo chatbot with Spring AI and Ollama</description>
 	<url/>

@@ -3,9 +3,11 @@ spring:
     name: demo-chatbot
   ai:
     ollama:
-      base-url: ${SPRING_AI_OLLAMA_BASE_URL:http://localhost:11434}
+      base-url: http://localhost:11434
+#      base-url: ${SPRING_AI_OLLAMA_BASE_URL:http://localhost:11434}
+
       chat:
-        model: llama3.2:1b # deepseek-r1:1.5b, gemma3:1b
+        model: llama3.2:latest # deepseek-r1:1.5b, gemma3:1b
     chat:
       memory:
         repository:
@@ -29,4 +31,4 @@ server:
   ssl:
     enabled: true
     key-store: ${CERTIFICATE_KEYSTORE:classpath:keystore.p12}
-    key-store-password: ${CERTIFICATE_KEYSTORE_PASS:123456}
+    key-store-password: ${CERTIFICATE_KEYSTORE_PASS:changeit}

@@ -25,8 +25,7 @@ public class ChatController {
         return chatClient
                 .prompt()
                 .user(question)
-                .advisors(advisor -> advisor
-                        .param(ChatMemory.CONVERSATION_ID, chatId))
+                .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, chatId))
                 .call()
                 .content();
     }
@@ -36,8 +35,7 @@ public class ChatController {
         return chatClient
                 .prompt()
                 .user(question)
-                .advisors(advisor -> advisor
-                        .param(ChatMemory.CONVERSATION_ID, chatId))
+                .advisors(advisor -> advisor.param(ChatMemory.CONVERSATION_ID, chatId))
                 .stream()
                 .content()
                 .map(ChunkResponseDTO::new);
